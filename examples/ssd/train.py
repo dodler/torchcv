@@ -16,26 +16,29 @@ import torchvision.transforms as transforms
 from PIL import Image
 from torch.autograd import Variable
 
-from torchcv.models.fpnssd import FPNSSD512
 from torchcv.models.ssd import SSD300, SSD512, SSDBoxCoder
 
 from torchcv.loss import SSDLoss
 from torchcv.datasets import ListDataset
 from torchcv.transforms import resize, random_flip, random_paste, random_crop, random_distort
 
+NUM_CLASSES = 7 + 1 # ex 6+1, +1 is for background
+
+BATCH_SIZE = 1
 
 parser = argparse.ArgumentParser(description='PyTorch SSD Training')
 parser.add_argument('--lr', default=1e-3, type=float, help='learning rate')
 parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint')
-parser.add_argument('--model', default='./examples/ssd/model/ssd512_vgg16.pth', type=str, help='initialized model path')
+parser.add_argument('--model', default='/home/lyan/Documents/torchcv/weights/fpnssd512_20_trained.pth', type=str, help='initialized model path')
+# parser.add_argument('--model', default='./examples/ssd/model/ssd512_vgg16.pth', type=str, help='initialized model path')
 parser.add_argument('--checkpoint', default='./examples/ssd/checkpoint/ckpt.pth', type=str, help='checkpoint path')
 args = parser.parse_args()
 
 # Model
 print('==> Building model..')
-# net = SSD512(num_classes=21)
-net = FPNSSD512(num_classes=21)
-net.load_state_dict(torch.load(args.model))
+net = SSD512(num_classes=NUM_CLASSES)
+# net = FPNSSD512(num_classes=NUM_CLASSES)
+# net.load_state_dict(torch.load(args.model))
 best_loss = float('inf')  # best test loss
 start_epoch = 0  # start from epoch 0 or last epoch
 if args.resume:
@@ -63,9 +66,8 @@ def transform_train(img, boxes, labels):
     boxes, labels = box_coder.encode(boxes, labels)
     return img, boxes, labels
 
-trainset = ListDataset(root='/search/odin/liukuang/data/voc_all_images',
-                       list_file=['torchcv/datasets/voc/voc07_trainval.txt',
-                                  'torchcv/datasets/voc/voc12_trainval.txt'],
+trainset = ListDataset(root='/home/lyan/Documents/sample_uvb/all_imgs',
+                       list_file=['/home/lyan/Documents/torchcv/torchcv/datasets/uvb/uvb_train.txt'],
                        transform=transform_train)
 
 def transform_test(img, boxes, labels):
@@ -77,18 +79,19 @@ def transform_test(img, boxes, labels):
     boxes, labels = box_coder.encode(boxes, labels)
     return img, boxes, labels
 
-testset = ListDataset(root='/search/odin/liukuang/data/voc_all_images',
-                      list_file='torchcv/datasets/voc/voc07_test.txt',
+testset = ListDataset(root='/home/lyan/Documents/sample_uvb/all_imgs',
+                      list_file='/home/lyan/Documents/torchcv/torchcv/datasets/uvb/uvb_train.txt',
                       transform=transform_test)
 
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=32, shuffle=True, num_workers=8)
-testloader = torch.utils.data.DataLoader(testset, batch_size=32, shuffle=False, num_workers=8)
+NUM_WORKERS=2
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=True, num_workers=NUM_WORKERS)
+testloader = torch.utils.data.DataLoader(testset, batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS)
 
 net.cuda()
-net = torch.nn.DataParallel(net, device_ids=range(torch.cuda.device_count()))
+# net = torch.nn.DataParallel(net, device_ids=range(torch.cuda.device_count()))
 cudnn.benchmark = True
 
-criterion = SSDLoss(num_classes=21)
+criterion = SSDLoss(num_classes=NUM_CLASSES)
 optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=1e-4)
 
 # Training

@@ -74,6 +74,8 @@ def box_iou(box1, box2):
     N = box1.size(0)
     M = box2.size(0)
 
+    # print(box1)
+
     lt = torch.max(box1[:,None,:2], box2[:,:2])  # [N,M,2]
     rb = torch.min(box1[:,None,2:], box2[:,2:])  # [N,M,2]
 
