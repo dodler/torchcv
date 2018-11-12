@@ -74,7 +74,7 @@ def eval(net):
 
     print(voc_eval(
         pred_boxes, pred_labels, pred_scores,
-        gt_boxes, gt_labels, gt_difficults,
+        gt_boxes, gt_labels, None,
         iou_thresh=0.5, use_07_metric=True))
 
 
