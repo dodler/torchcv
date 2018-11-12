@@ -75,7 +75,11 @@ class SSDBoxCoder:
 
         mask = (index<0) & (ious.max(1)[0]>=0.5)
         if mask.any():
-            index[mask] = ious[mask.nonzero().squeeze()].max(1)[1]
+            t = ious[mask.nonzero().squeeze()]
+            if len(t.shape) == 1:
+                index[mask] = t[0].long()
+            else:
+                index[mask] = t.max(1)[1]
 
         boxes = boxes[index.clamp(min=0)]  # negative index not supported
         boxes = change_box_order(boxes, 'xyxy2xywh')
