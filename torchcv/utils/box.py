@@ -101,10 +101,13 @@ def box_nms(bboxes, scores, threshold=0.5):
     Reference:
       https://github.com/rbgirshick/py-faster-rcnn/blob/master/lib/nms/py_cpu_nms.py
     '''
-    x1 = bboxes[:,0]
-    y1 = bboxes[:,1]
-    x2 = bboxes[:,2]
-    y2 = bboxes[:,3]
+    if len(bboxes.shape) == 1:
+        bboxes = bboxes.unsqueeze(0)
+
+    x1 = bboxes[:, 0]
+    y1 = bboxes[:, 1]
+    x2 = bboxes[:, 2]
+    y2 = bboxes[:, 3]
 
     areas = (x2-x1) * (y2-y1)
     _, order = scores.sort(0, descending=True)

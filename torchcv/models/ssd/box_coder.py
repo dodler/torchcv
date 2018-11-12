@@ -117,6 +117,8 @@ class SSDBoxCoder:
             if not mask.any():
                 continue
             box = box_preds[mask.nonzero().squeeze()]
+            if len(box.shape) == 1:
+                box = box.unsqueeze(0)
             score = score[mask]
 
             keep = box_nms(box, score, nms_thresh)
