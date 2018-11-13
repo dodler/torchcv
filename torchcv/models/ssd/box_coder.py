@@ -8,12 +8,12 @@ from torchcv.utils.box import box_iou, box_nms, change_box_order
 
 
 class SSDBoxCoder:
-    def __init__(self, ssd_model):
+    def __init__(self, ssd_model, device='cpu'):
         self.steps = ssd_model.steps
         self.box_sizes = ssd_model.box_sizes
         self.aspect_ratios = ssd_model.aspect_ratios
         self.fm_sizes = ssd_model.fm_sizes
-        self.default_boxes = self._get_default_boxes()
+        self.default_boxes = self._get_default_boxes().to(device)
 
     def _get_default_boxes(self):
         boxes = []
@@ -130,6 +130,8 @@ class SSDBoxCoder:
             labels.append(torch.LongTensor(len(box[keep])).fill_(i))
             scores.append(score[keep])
 
+        if len(boxes) == 0:
+            return [],[],[]
         boxes = torch.cat(boxes, 0)
         labels = torch.cat(labels, 0)
         scores = torch.cat(scores, 0)

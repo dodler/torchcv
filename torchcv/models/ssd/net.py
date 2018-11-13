@@ -117,13 +117,17 @@ class SSD300(nn.Module):
         self.num_classes = num_classes
         self.num_anchors = (4, 6, 6, 6, 4, 4)
         self.in_channels = (512, 1024, 512, 256, 256, 256)
-
         self.extractor = VGG16Extractor300()
+
+        self._init_layers()
+
+    def _init_layers(self):
         self.loc_layers = nn.ModuleList()
         self.cls_layers = nn.ModuleList()
         for i in range(len(self.in_channels)):
-        	self.loc_layers += [nn.Conv2d(self.in_channels[i], self.num_anchors[i]*4, kernel_size=3, padding=1)]
-        	self.cls_layers += [nn.Conv2d(self.in_channels[i], self.num_anchors[i]*self.num_classes, kernel_size=3, padding=1)]
+            self.loc_layers += [nn.Conv2d(self.in_channels[i], self.num_anchors[i] * 4, kernel_size=3, padding=1)]
+            self.cls_layers += [
+                nn.Conv2d(self.in_channels[i], self.num_anchors[i] * self.num_classes, kernel_size=3, padding=1)]
 
     def forward(self, x):
         loc_preds = []
