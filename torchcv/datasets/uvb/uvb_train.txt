@@ -20,13 +20,13 @@ make_phone_photo_101.jpg 98 32 526 284 0
 make_phone_photo_10.jpg 24 22 479 555 0
 make_phone_photo_1.jpg 1 118 291 592 0
 middle_finger_0.jpg 6 236 173 549 3
-middle_finger_1000.jpg 44 165 423 467 3405 146 800 445 3
+middle_finger_1000.jpg 44 165 423 467 3 405 146 800 445 3
 middle_finger_1001.jpg 818 998 944 1347 3
 middle_finger_1002.jpg 35 10 84 82 3
 middle_finger_1003.jpg 1 758 695 1956 3
-middle_finger_1004.jpg 691 330 971 531 3272 344 527 546 3
+middle_finger_1004.jpg 691 330 971 531 3 272 344 527 546 3
 middle_finger_1005.jpg 1 221 482 966 3
-middle_finger_1006.jpg 13 163 239 369 3387 124 631 351 3
+middle_finger_1006.jpg 13 163 239 369 3 387 124 631 351 3
 middle_finger_1007.jpg 40 18 426 291 3
 middle_finger_1008.jpg 828 966 958 1263 3
 middle_finger_1009.jpg 371 173 575 328 3
@@ -44,18 +44,18 @@ phone_reading_1000.jpg 132 30 357 506 1
 phone_reading_1001.jpg 1 38 560 605 1
 phone_reading_1002.jpg 1 17 426 699 1
 phone_reading_1003.jpg 113 13 630 570 1
-phone_reading_1004.jpg 766 286 1573 1451 11 354 853 1508 1
-phone_reading_1005.jpg 16 27 493 1077 1233 9 686 1048 1457 54 668 810 1
+phone_reading_1004.jpg 766 286 1573 145 1 11 354 853 1508 1
+phone_reading_1005.jpg 16 27 493 1077 1 233 9 686 1048 1 457 54 668 810 1
 phone_reading_1006.jpg 5 24 391 602 1
 phone_reading_1007.jpg 129 32 349 494 1
-phone_reading_1008.jpg 49 8 346 470 1142 6 639 571 1
-phone_reading_1009.jpg 176 60 280 413 167 30 174 408 1
+phone_reading_1008.jpg 49 8 346 470 1 142 6 639 571 1
+phone_reading_1009.jpg 176 60 280 413 1 67 30 174 408 1
 phone_reading_100.jpg 150 21 602 548 1
 phone_reading_1010.jpg 93 31 415 494 1
 phone_reading_1011.jpg 127 22 402 342 1
 phone_reading_101.jpg 318 267 517 723 1
 phone_reading_10.jpg 36 44 610 596 1
-phone_reading_1.jpg 307 116 495 619 141 132 205 595 1
+phone_reading_1.jpg 307 116 495 619 1 41 132 205 595 1
 phone_talking_0.jpg 1 56 472 875 2
 phone_talking_1000.jpg 320 207 616 840 2
 phone_talking_1001.jpg 51 41 320 456 2
