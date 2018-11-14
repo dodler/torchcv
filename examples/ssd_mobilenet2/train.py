@@ -16,7 +16,7 @@ from torchcv.models.ssd import SSDBoxCoder
 from torchcv.transforms import resize, random_flip, random_paste, random_crop, random_distort
 
 NUM_CLASSES = 6 + 1  # ex 6+1, +1 is for background
-DEVICE=0
+DEVICE='cpu'
 BATCH_SIZE = 1
 NUM_WORKERS = 2
 
@@ -147,6 +147,3 @@ def test(epoch):
 for epoch in range(start_epoch, start_epoch + 200):
     train(epoch)
     test(epoch)
-
-
-from training.training import Trainer

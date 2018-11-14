@@ -98,27 +98,42 @@ class MobileNet2Feature(nn.Module):
         self.activation_type = activation
         self.activation = activation(inplace=True)
 
-        self.num_of_channels = [32, 16, 24, 32, 64, 96, 160, 320]
+        self.num_of_channels = [32, 16, 24, 32]#, 64, 96, 160, 320]
         # assert (input_size % 32 == 0)
 
         self.c = [_make_divisible(ch * self.scale, 8) for ch in self.num_of_channels]
-        self.n = [1, 1, 2, 3, 4, 3, 3, 1]
-        self.s = [2, 1, 2, 2, 2, 1, 2, 1]
+        self.n = [1, 1, 2, 3]#, 4, 3, 3, 1]
+        self.s = [2, 1, 2, 2]#, 2, 1, 2, 1]
         self.conv1 = nn.Conv2d(in_channels, self.c[0], kernel_size=3, bias=False, stride=self.s[0], padding=1)
         self.bn1 = nn.BatchNorm2d(self.c[0])
         self.bottlenecks = self._make_bottlenecks()
 
-        self.ssd_conv = nn.ModuleList([
-                L2Norm(320, 10),
-                nn.Conv2d(320, 320, kernel_size=1),
-                nn.Conv2d(320, 640, kernel_size=1),
-                nn.Conv2d(640, 320, kernel_size=3),
-                nn.Conv2d(320, 160, kernel_size=3),
-                nn.Conv2d(160, 320, kernel_size=2),
-                nn.Conv2d(320, 160, kernel_size=2),
-                nn.Conv2d(160, 320, 3),
-                nn.Conv2d(320, 160, 2),
-        ])
+        channels_ssd = 512
+        self.conv2 = nn.Conv2d(kernel_size=1,
+                               in_channels=self.num_of_channels[-1],
+                               out_channels=channels_ssd)
+
+        self.norm4 = L2Norm(512, 20) # 20 - ???
+
+        self.conv5_1 = nn.Conv2d(channels_ssd, 512, kernel_size=3, padding=1, dilation=1)
+        self.conv5_2 = nn.Conv2d(512, 512, kernel_size=3, padding=1, dilation=1)
+        self.conv5_3 = nn.Conv2d(512, 512, kernel_size=3, padding=1, dilation=1)
+
+        self.conv6 = nn.Conv2d(512, 1024, kernel_size=3, padding=6, dilation=6)
+        self.conv7 = nn.Conv2d(1024, 1024, kernel_size=1)
+
+        self.conv8_1 = nn.Conv2d(1024, 256, kernel_size=1)
+        self.conv8_2 = nn.Conv2d(256, 512, kernel_size=3, stride=2, padding=1)
+
+        self.conv9_1 = nn.Conv2d(512, 128, kernel_size=1)
+        self.conv9_2 = nn.Conv2d(128, 256, kernel_size=3, stride=2, padding=1)
+
+        self.conv10_1 = nn.Conv2d(256, 128, kernel_size=1)
+        self.conv10_2 = nn.Conv2d(128, 256, kernel_size=3)
+
+        self.conv11_1 = nn.Conv2d(256, 128, kernel_size=1)
+        self.conv11_2 = nn.Conv2d(128, 256, kernel_size=3)
+
         self.init_params()
 
     def init_params(self):
@@ -177,37 +192,47 @@ class MobileNet2Feature(nn.Module):
         x = self.bn1(x)
         x = self.activation(x)
 
-        x = self.bottlenecks(x)
+        h = self.bottlenecks(x)
+        h = F.relu(self.conv2(h))
+
         hs = []
-        x = self.ssd_conv[0](x)
-        x = F.relu(self.ssd_conv[1](x))
-        hs.append(x)
 
-        x = F.relu(self.ssd_conv[2](x))
-        hs.append(x)
+        hs.append(self.norm4(h))  # conv4_3
 
-        x = F.relu(self.ssd_conv[3](x))
-        hs.append(x)
+        h = F.max_pool2d(h, kernel_size=2, stride=2, ceil_mode=True)
 
-        x = F.relu(self.ssd_conv[4](x))
-        hs.append(x)
+        h = F.relu(self.conv5_1(h))
+        h = F.relu(self.conv5_2(h))
+        h = F.relu(self.conv5_3(h))
+        h = F.max_pool2d(h, kernel_size=3, stride=1, padding=1, ceil_mode=True)
 
-        x = F.relu(self.ssd_conv[5](x))
-        x = F.relu(self.ssd_conv[6](x))
-        hs.append(x)
+        h = F.relu(self.conv6(h))
+        h = F.relu(self.conv7(h))
+        hs.append(h)  # conv7
 
-        x = F.relu(self.ssd_conv[7](x))
-        x = F.relu(self.ssd_conv[8](x))
-        hs.append(x)
+        h = F.relu(self.conv8_1(h))
+        h = F.relu(self.conv8_2(h))
+        hs.append(h)  # conv8_2
+
+        h = F.relu(self.conv9_1(h))
+        h = F.relu(self.conv9_2(h))
+        hs.append(h)  # conv9_2
+
+        h = F.relu(self.conv10_1(h))
+        h = F.relu(self.conv10_2(h))
+        hs.append(h)  # conv10_2
+
+        h = F.relu(self.conv11_1(h))
+        h = F.relu(self.conv11_2(h))
+        hs.append(h)  # conv11_2
+        return hs
 
         return hs
 
 
 class SSD300MobNet2(SSD300):
-    fm_sizes = (10, 10, 8, 6, 4, 1)
 
     def __init__(self, num_classes):
         SSD300.__init__(self, num_classes)
         self.extractor = from_state_dict()
-        self.in_channels = (320, 640, 320, 160, 160, 160)
         self._init_layers()
