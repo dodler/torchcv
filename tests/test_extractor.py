@@ -17,8 +17,13 @@ class TestExtractor(unittest.TestCase):
         self.mobilenet_extractor = MobileNet2Feature()
 
     def test_vgg_extractor(self):
+        expected_dim = [38, 19, 10, 5, 3, 1]
+        expected_filters = [512, 1024, 512, 256, 256, 256]
         with torch.no_grad():
-            [print(k.shape) for k in self.vgg_extractor(torch.zeros((1, 3, 300, 300)))]
+            feat = self.vgg_extractor(torch.zeros((1, 3, 300, 300)))
+            for i, f in enumerate(feat):
+                assert f.shape[2] == expected_dim[i]
+                assert f.shape[1] == expected_filters[i]
 
     def test_mobilenet2_extractor_shape(self):
         expected_filters = [320, 640, 320, 160, 160, 160]
