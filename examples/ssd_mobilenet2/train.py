@@ -15,6 +15,8 @@ from torchcv.models.mobilenetv2.net import SSD300MobNet2
 from torchcv.models.ssd import SSDBoxCoder
 from torchcv.transforms import resize, random_flip, random_paste, random_crop, random_distort
 
+LIST_FILE = '/home/lyan/Documents/torchcv/torchcv/datasets/uvb/uvb_train.txt'
+IMGS_ROOT = '/home/lyan/Documents/sample_uvb/all_imgs'
 NUM_CLASSES = 6 + 1  # ex 6+1, +1 is for background
 DEVICE='cpu'
 BATCH_SIZE = 1
@@ -63,8 +65,8 @@ def transform_train(img, boxes, labels):
     return img, boxes, labels
 
 
-trainset = ListDataset(root='/home/lyan/Documents/sample_uvb/all_imgs',
-                       list_file=['/home/lyan/Documents/torchcv/torchcv/datasets/uvb/uvb_train.txt'],
+trainset = ListDataset(root=IMGS_ROOT,
+                       list_file=[LIST_FILE],
                        transform=transform_train)
 
 
@@ -78,8 +80,8 @@ def transform_test(img, boxes, labels):
     return img, boxes, labels
 
 
-testset = ListDataset(root='/home/lyan/Documents/sample_uvb/all_imgs',
-                      list_file='/home/lyan/Documents/torchcv/torchcv/datasets/uvb/uvb_train.txt',
+testset = ListDataset(root=IMGS_ROOT,
+                      list_file=LIST_FILE,
                       transform=transform_test)
 
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=True, num_workers=NUM_WORKERS)
