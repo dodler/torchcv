@@ -26,8 +26,8 @@ class TestExtractor(unittest.TestCase):
                 assert f.shape[1] == expected_filters[i]
 
     def test_mobilenet2_extractor_shape(self):
-        expected_filters = [320, 640, 320, 160, 160, 160]
-        expected_dim = (10, 10, 8, 6, 4, 1)
+        expected_dim = [38, 19, 10, 5, 3, 1]
+        expected_filters = [512, 1024, 512, 256, 256, 256]
 
         with torch.no_grad():
             result = self.mobilenet_extractor(torch.zeros(1, 3, 300, 300))
