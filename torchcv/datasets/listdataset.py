@@ -9,6 +9,7 @@ import torch.utils.data as data
 import torchvision.transforms as transforms
 
 from PIL import Image
+Image.MAX_IMAGE_PIXELS=10000000000000
 
 
 class ListDataset(data.Dataset):
